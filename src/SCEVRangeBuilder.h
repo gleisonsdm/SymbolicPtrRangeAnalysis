@@ -82,6 +82,7 @@ class SCEVRangeBuilder : private SCEVExpander {
   // We need to overwrite this method so the most specialized visit methods are
   // called before the visitors on SCEVExpander.
   Value *visit(const SCEV *S, bool Upper) {
+    S->dump();
     switch (S->getSCEVType()) {
     case scConstant:
       return visitConstant((const SCEVConstant *)S, Upper);

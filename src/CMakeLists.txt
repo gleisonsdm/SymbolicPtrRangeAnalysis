@@ -45,4 +45,9 @@ add_library(LLVMPTRRA MODULE
   PtrRangeAnalysis.cpp
   SCEVRangeBuilder.cpp  
   RegionReconstructor.cpp
+  PrintPtrRa.cpp
+  PrintDBGInfo.cpp
+  PrintAA.cpp
+  DumpDBGInfo.cpp
+  PrintMemDep.cpp
 )
