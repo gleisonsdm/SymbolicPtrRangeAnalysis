@@ -1,4 +1,4 @@
-//===---------------------- recoverExpressions.h --------------------------===//
+//===------------------------- PrintMemDep.h -----------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -31,23 +31,44 @@ class PrintMemDep : public FunctionPass {
   //===---------------------------------------------------------------------===
   //                              Data Structs
   //===---------------------------------------------------------------------===
+
   //===---------------------------------------------------------------------===
 
+  // Find the line for a value in the source code.
+  // Return -1 case not found it.
   int getLineNum(Value *V);
 
+  // Find the column for a value in the source code.
+  // Return -1 case not found it. 
   int getColumnNum(Value *V);
 
+  // Interface that pprovides a easy way to associate Metadata to a Instruction.
+  // 
+  // - I -> Instruction Reference
+  // - label -> ID to identify the metadata
+  // - info -> Information to insert
+  //  
   void insertMetadataToInst(Instruction *I, std::string label, std::string info);
 
-  void dumpDBGINFO(Function *F, DependenceAnalysis *da);
+  // Write the information in DependenceAnalysis in DWARF format.
+  void printDBGINFO(Function *F, DependenceAnalysis *da);
 
-  void dumpEachFuncionInsts(Function *F);
+  // Write information of each Function in DWARF format.
+  // 
+  // Including:
+  // - ID for each instruction
+  // - Function name
+  // - Line of the instruction in the source code
+  // - Column of the instruction in the source code
+  //
+  void printEachFuncionInsts(Function *F);
 
   public:
 
   //===---------------------------------------------------------------------===
   //                              Data Structs
   //===---------------------------------------------------------------------===
+
   //===---------------------------------------------------------------------===
 
   static char ID;
@@ -71,4 +92,4 @@ class PrintMemDep : public FunctionPass {
 
 }
 
-//===---------------------- recoverExpressions.h --------------------------===//
+//===------------------------- PrintMemDep.h -----------------------------===//

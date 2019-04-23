@@ -1,9 +1,9 @@
-//===---------------------- recoverExpressions.cpp ------------------------===//
+//===------------------------ PrintMemDep.cpp --------------------------===//
 //
 // This file is distributed under the Universidade Federal de Minas Gerais - 
 // UFMG Open Source License. See LICENSE.TXT for details.
 //
-// Copyright (C) 2015   Gleison Souza Diniz Mendon?a
+// Copyright (C) 2019   Gleison Souza Diniz Mendon?a
 //
 //===----------------------------------------------------------------------===//
 //
@@ -55,38 +55,32 @@ int PrintMemDep::getColumnNum(Value *V) {
 
 void PrintMemDep::insertMetadataToInst(Instruction *I, std::string label,
 		                   std::string info) {
-  info = " {" + info + "} ";
   LLVMContext& C = I->getContext();
   MDNode *N = MDNode::get(C, MDString::get(C, info));
   MDNode *MD = I->getMetadata(label);
-  MDNode *MDR = N->concatenate(N, MD);
+  MDNode *MDR = N->concatenate(MD, N);
   // Concatenate the current info:
   I->setMetadata(label, MDR);
 }
 
-void PrintMemDep::dumpDBGINFO(Function *F, DependenceAnalysis *da) {
-  std::string dep1 = std::string();
-  std::string dep2 = std::string();
-  int id1 = 0, id2 = 0;
+void PrintMemDep::printDBGINFO(Function *F, DependenceAnalysis *da) {
+  std::string dep = std::string();
+  int id1 = 0;
   // Check for memory dependecies among every pair of instructions in this function.
   for (auto Src = inst_begin(F), SrcE = inst_end(F); Src != SrcE; ++Src) {
+    id1++;
     if (Src->mayWriteToMemory() || Src->mayReadFromMemory()) {
-      id1++;
-
-      for (auto Dst = Src, DstE = inst_end(F); Dst != DstE; ++Dst) {
+      int id2 = 0;
+      for (auto Dst = inst_begin(F), DstE = inst_end(F); Dst != DstE; ++Dst) {
         id2++;
       	if (Dst->mayWriteToMemory() || Dst->mayReadFromMemory()) {
           if (auto D = da->depends(&*Src, &*Dst, true)) {
-	    dep1 = std::to_string(id1) + " depends of " + std::to_string(id2);
-	    dep2 = std::to_string(id2) + " depends of " + std::to_string(id1);
-	    insertMetadataToInst(&*Src, "Memory Dependence", dep1);
-	    insertMetadataToInst(&*Dst, "Memory Dependence", dep2);
+	    dep = std::to_string(id1) + " depends of " + std::to_string(id2);
+	    insertMetadataToInst(&*Src, "Memory Dependence", dep);
 	  }
 	  else {
-	    dep1 = std::to_string(id1) + " do not depend of " + std::to_string(id2);
-	    dep2 = std::to_string(id2) + " do not depend of " + std::to_string(id1);
-	    insertMetadataToInst(&*Src, "Memory Dependence", dep1);
-	    insertMetadataToInst(&*Dst, "Memory Dependence", dep2);
+	    dep = std::to_string(id1) + " do not depend of " + std::to_string(id2);
+	    insertMetadataToInst(&*Src, "Memory Dependence", dep);
 	  }
 	}
       }
@@ -94,7 +88,7 @@ void PrintMemDep::dumpDBGINFO(Function *F, DependenceAnalysis *da) {
   }
 }
 
-void PrintMemDep::dumpEachFuncionInsts(Function *F) {
+void PrintMemDep::printEachFuncionInsts(Function *F) {
   int countInst = 0;
   for (auto I = inst_begin(F), IE = inst_end(F); I != IE; ++I) {
     countInst++;
@@ -118,9 +112,9 @@ bool PrintMemDep::runOnFunction(Function &F) {
   if (F.isDeclaration() || F.isIntrinsic())
     return true;
 
-  dumpDBGINFO(&F, da);
+  printDBGINFO(&F, da);
 
-  dumpEachFuncionInsts(&F);
+  printEachFuncionInsts(&F);
 
   return true;
 }
@@ -129,4 +123,4 @@ char PrintMemDep::ID = 0;
 static RegisterPass<PrintMemDep> Z("print-mem-dep",
 "Recover Expressions to the source File.");
 
-//===------------------------ recoverExpressions.cpp ------------------------===//
+//===-------------------------- PrintMemDep.cpp --------------------------===//

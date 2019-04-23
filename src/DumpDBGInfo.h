@@ -1,11 +1,11 @@
-//===---------------------- recoverExpressions.h --------------------------===//
+//===------------------------ DumpDBGInfo.h ------------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
 // This file is distributed under the Universidade Federal de Minas Gerais -
 // UFMG Open Source License. See LICENSE.TXT for details.
 //
-// Copyright (C) 2015   Gleison Souza Diniz Mendon?a
+// Copyright (C) 2019   Gleison Souza Diniz Mendon?a
 //
 //===----------------------------------------------------------------------===//
 //
@@ -30,12 +30,22 @@ class DumpDBGInfo : public FunctionPass {
   //===---------------------------------------------------------------------===
   //                              Data Structs
   //===---------------------------------------------------------------------===
+ 
   //===---------------------------------------------------------------------===
 
+  // Interface that pprovides a easy way to associate Metadata to a Instruction.
+  // 
+  // - I -> Instruction Reference
+  // - label -> ID to identify the metadata
+  // - info -> Information to insert
+  // 
   void insertMetadataToInst(Instruction *I, std::string label, std::string info);
 
+  // recover and Print Information in the DWARF format (return an unique string
+  // with the info).
   std::string getMetadataInfo(Instruction *I, std::string label);
 
+  // Find the information in DWARF format and dump it into standart output.
   void dumpDBGINFO(Function *F);
 
   public:
@@ -43,6 +53,7 @@ class DumpDBGInfo : public FunctionPass {
   //===---------------------------------------------------------------------===
   //                              Data Structs
   //===---------------------------------------------------------------------===
+
   //===---------------------------------------------------------------------===
 
   static char ID;
@@ -62,4 +73,4 @@ class DumpDBGInfo : public FunctionPass {
 
 }
 
-//===---------------------- recoverExpressions.h --------------------------===//
+//===-------------------------- DumpDBGInfo.h ----------------------------===//

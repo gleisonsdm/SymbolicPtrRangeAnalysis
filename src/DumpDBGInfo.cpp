@@ -1,9 +1,9 @@
-//===---------------------- recoverExpressions.cpp ------------------------===//
+//===-------------------------- DumpDBGInfo.cpp ---------------------------===//
 //
 // This file is distributed under the Universidade Federal de Minas Gerais - 
 // UFMG Open Source License. See LICENSE.TXT for details.
 //
-// Copyright (C) 2015   Gleison Souza Diniz Mendon?a
+// Copyright (C) 2019   Gleison Souza Diniz Mendon?a
 //
 //===----------------------------------------------------------------------===//
 //
@@ -35,11 +35,14 @@ using namespace std;
 
 void DumpDBGInfo::insertMetadataToInst(Instruction *I, std::string label,
 		                   std::string info) {
-  info = " {" + info + "} ";
+  // Find the context to the instruction:
   LLVMContext& C = I->getContext();
+  // Build a Metadata node with the information:
   MDNode *N = MDNode::get(C, MDString::get(C, info));
+  // Select the current metadata with the same label:
   MDNode *MD = I->getMetadata(label);
-  MDNode *MDR = N->concatenate(N, MD);
+  // Concatenate the old information with the one you would like to insert:
+  MDNode *MDR = N->concatenate(MD, N);
   // Concatenate the current info:
   I->setMetadata(label, MDR);
 }
@@ -85,4 +88,4 @@ char DumpDBGInfo::ID = 0;
 static RegisterPass<DumpDBGInfo> Z("dump-dbg-info",
 "Recover Expressions to the source File.");
 
-//===------------------------ recoverExpressions.cpp ------------------------===//
+//===-------------------------- DumpDBGInfo.cpp --------------------------===//

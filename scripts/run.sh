@@ -46,14 +46,20 @@ export OPT="${LLVM_PATH}/bin/opt"
 export PTRRA="${DBGPRINT}/libLLVMPTRRA.so"
 
 #Export tools flags
-export FLAGS=" -mem2reg -instnamer -basicaa "
+export FLAGS=" -mem2reg -instnamer -basicaa -tbaa "
 
 #Temporary files names
-TEMP_FILE1="result.bc"
-TEMP_FILE2="result2.bc"
+TEMP_FILE1="readable_IR_FILE_CLANG.bc"
+TEMP_FILE2="readable_IR_FILE_OPT.bc"
+TEMP_FILE3="bitcode_FILE_CLANG.bc"
+TEMP_FILE4="bitcode_FILE_OPT.bc"
 LOG_FILE="out_pl.log"
 
-$CLANG -g -S -emit-llvm ${FILE} -o ${TEMP_FILE1} 
+$CLANG -g -S -emit-llvm -c ${FILE} -o ${TEMP_FILE1} 
 
 $OPT -load $PTRRA $FLAGS -print-mem-dep -dump-dbg-info -S ${TEMP_FILE1} -o ${TEMP_FILE2}
+
+$CLANG -g -emit-llvm -c ${FILE} -o ${TEMP_FILE3} 
+
+$OPT -load $PTRRA $FLAGS -print-mem-dep -dump-dbg-info ${TEMP_FILE3} -o ${TEMP_FILE4}
 
